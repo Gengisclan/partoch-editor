@@ -5,6 +5,7 @@
   "description": "Éditeur de partitions pour flûte à bec et piano",
   "repository": "github:Gengisclan/partoch-editor",
   "main": "main.js",
+  "license": "Unlicense",
   "private": true,
   "scripts": {
     "start": "electron .",

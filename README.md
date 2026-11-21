@@ -44,4 +44,8 @@ npm start
 npm run dist
 ```
 
-<sub>Rendu des partitions : [VexFlow](https://github.com/0xfe/vexflow) (MIT). Transcription audio : [Basic Pitch](https://github.com/spotify/basic-pitch) (Apache-2.0). Sons : FluidR3 et MusyngKite ([midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts)). Scan : [Audiveris](https://github.com/Audiveris/audiveris) (AGPL, téléchargé à part).</sub>
+## Licence
+
+Domaine public ([Unlicense](LICENSE)) : chacun en fait ce qu'il veut. Les composants tiers gardent leur licence :
+
+<sub>Rendu des partitions : [VexFlow](https://github.com/0xfe/vexflow) (MIT). Transcription audio : [Basic Pitch](https://github.com/spotify/basic-pitch) (Apache-2.0). Sons : FluidR3 (CC BY 3.0) et MusyngKite (CC BY-SA 3.0), via [midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts). Scan : [Audiveris](https://github.com/Audiveris/audiveris) (AGPL, téléchargé à part).</sub>

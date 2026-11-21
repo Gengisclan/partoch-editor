@@ -233,3 +233,5 @@ Divers
 - Ctrl + molette : zoom. F12 : outils de développement.
 
 Sons : échantillons « recorder » de FluidR3 et MusyngKite (gleitz/midi-js-soundfonts). Gravure : VexFlow.
+
+Licence : domaine public (Unlicense, voir LICENSE), chacun en fait ce qu'il veut. VexFlow (MIT), Basic Pitch (Apache 2.0), FluidR3 (CC BY 3.0), MusyngKite (CC BY-SA 3.0) et Audiveris (AGPL) gardent leur licence.
