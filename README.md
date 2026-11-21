@@ -18,16 +18,14 @@
 
 ## Fonctions
 
-| | |
-|---|---|
-| **Écriture** | souris ou clavier, accords, triolets, petites notes, deux voix, levée |
-| **Signes** | nuances, soufflets, articulations, ornements, reprises, D.C. / D.S., tempo |
-| **Textes** | paroles sur plusieurs couplets, accords, basse chiffrée |
-| **Lecture** | sons de flûte à bec et de piano, métronome, boucle, vitesse d'entraînement |
-| **Micro** | transcription de ce qui est joué, accordeur (La 440, 442, 415, 392) |
-| **Import** | MusicXML, MIDI, enregistrement audio, scan de partition (PDF ou image) |
-| **Export** | PDF A4, parties séparées, MusicXML, MIDI |
-| **Instruments** | flûtes soprano, alto, ténor, basse, piano ; transposition, tessitures |
+- **Écriture** : souris ou clavier, accords, triolets, petites notes, deux voix, levée
+- **Signes** : nuances, soufflets, articulations, ornements, reprises, D.C. / D.S., tempo
+- **Textes** : paroles sur plusieurs couplets, accords, basse chiffrée
+- **Lecture** : sons de flûte à bec et de piano, métronome, boucle, vitesse d'entraînement
+- **Micro** : transcription de ce qui est joué, accordeur (La 440, 442, 415, 392)
+- **Import** : MusicXML, MIDI, enregistrement audio, scan de partition (PDF ou image)
+- **Export** : PDF A4, parties séparées, MusicXML, MIDI
+- **Instruments** : flûtes soprano, alto, ténor, basse, piano ; transposition, tessitures
 
 ## Installer
 
