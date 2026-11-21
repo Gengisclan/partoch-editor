@@ -82,6 +82,7 @@ function createWindow() {
     const f = fileFromArgs(process.argv);
     if (f) win.webContents.send('open-path', readForRenderer(f));
   });
+  win.webContents.once('did-finish-load', () => setTimeout(checkUpdates, 5000));
   win.webContents.on('before-input-event', (e, input) => {
     if (input.type !== 'keyDown') return;
     if (input.key === 'F12') win.webContents.toggleDevTools();
@@ -99,8 +100,60 @@ function createWindow() {
       message: 'Enregistrer les modifications avant de quitter ?',
     });
     if (r === 0) win.webContents.send('command', 'save-before-quit');
-    else if (r === 1) { forceQuit = true; win.close(); }
+    else if (r === 1) { if (updatePending) installUpdate(); else { forceQuit = true; win.close(); } }
+    else updatePending = false;
   });
+}
+
+// ------------------------------------------------------------------ mises à jour
+// version installée : téléchargement discret puis « Redémarrer » ; version portable : simple avis
+const RELEASES_URL = 'https://github.com/Gengisclan/partoch-editor/releases/latest';
+let updater = null;
+let updatePending = false;
+function sendUpdate(u) {
+  if (!win || win.isDestroyed()) return;
+  win.webContents.send('update-status', u);
+  // essai : PARTOCH_UPDATE_DRYRUN=1 affiche le bouton obtenu puis quitte sans rien installer
+  if (process.env.PARTOCH_UPDATE_DRYRUN) setTimeout(async () => {
+    const ui = '[update] ui ' + await win.webContents.executeJavaScript("(b => b.hidden ? 'hidden' : b.textContent)(document.querySelector('#updBtn'))");
+    console.log(ui);
+    if (/[\\/]/.test(process.env.PARTOCH_UPDATE_DRYRUN)) fs.appendFileSync(process.env.PARTOCH_UPDATE_DRYRUN, ui + '\n');
+    forceQuit = true; app.quit();
+  }, 1000);
+}
+function newer(a, b) {
+  const pa = String(a).replace(/^v/, '').split('.').map(Number), pb = String(b).split('.').map(Number);
+  for (let i = 0; i < 3; i++) { if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) > (pb[i] || 0); }
+  return false;
+}
+async function checkPortableUpdate() {
+  try {
+    const { net } = require('electron');
+    const r = await net.fetch('https://api.github.com/repos/Gengisclan/partoch-editor/releases/latest', { headers: { 'User-Agent': 'Partoch-editor', Accept: 'application/vnd.github+json' } });
+    if (!r.ok) return;
+    const tag = String((await r.json()).tag_name || '');
+    if (/^v?\d+\.\d+\.\d+$/.test(tag) && newer(tag, app.getVersion())) sendUpdate({ kind: 'available', version: tag.replace(/^v/, '') });
+  } catch (e) { /* hors ligne : rien */ }
+}
+function checkUpdates() {
+  if (!app.isPackaged || process.env.PARTOCH_SNAPSHOT) return;
+  if (portableDir) { checkPortableUpdate(); return; }
+  try {
+    updater = require('electron-updater').autoUpdater;
+    updater.autoDownload = true;
+    updater.autoInstallOnAppQuit = !process.env.PARTOCH_UPDATE_DRYRUN;
+    updater.logger = null;
+    updater.on('update-downloaded', (info) => { console.log('[update] ready ' + info.version); sendUpdate({ kind: 'ready', version: info.version }); });
+    updater.on('update-available', (info) => console.log('[update] available ' + info.version));
+    updater.on('update-not-available', () => console.log('[update] none'));
+    updater.on('error', (err) => console.log('[update] error ' + (err && err.message)));
+    updater.checkForUpdates().catch(() => {});
+  } catch (e) { /* ignore */ }
+}
+function installUpdate() {
+  if (!updater) return;
+  forceQuit = true;
+  updater.quitAndInstall(true, true);
 }
 
 function readForRenderer(p) {
@@ -220,7 +273,13 @@ ipcMain.handle('open-audiveris-site', async () => shell.openExternal('https://gi
 app.on('will-quit', () => { try { fs.rmSync(path.join(require('os').tmpdir(), 'partoch'), { recursive: true, force: true }); } catch (e) { /* ignore */ } });
 
 ipcMain.on('dirty', (e, d) => { dirty = !!d; });
-ipcMain.on('quit-now', () => { forceQuit = true; if (win) win.close(); });
+ipcMain.on('quit-now', () => { if (updatePending) { installUpdate(); return; } forceQuit = true; if (win) win.close(); });
+ipcMain.on('update-restart', () => {
+  if (!updater) return;
+  updatePending = true;
+  if (dirty) win.close(); else installUpdate();
+});
+ipcMain.handle('open-releases', async () => shell.openExternal(RELEASES_URL));
 
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) app.quit();

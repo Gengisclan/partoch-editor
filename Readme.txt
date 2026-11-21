@@ -13,6 +13,8 @@ Deux fichiers, sur la page Releases du dépôt :
 - Installer-Partoch-editor.exe (petit) : télécharge puis installe l'application, avec un raccourci sur le Bureau. Les partitions vont dans Documents\Partoch.
 - Partoch-editor-portable.exe : rien à installer, se lance d'un double-clic, par exemple depuis une clé USB. Les partitions (Partitions\) et les réglages (Partoch - données\) restent à côté du fichier, sur la clé.
 
+Mises à jour : la version installée se met à jour toute seule (« Mise à jour … : redémarrer » en bas à droite). La version portable signale seulement une nouvelle version : il suffit de remplacer le fichier sur la clé.
+
 Au premier lancement, Windows peut afficher « Windows a protégé votre ordinateur » (l'application n'est pas signée) : Informations complémentaires → Exécuter quand même.
 
 Le scan de partitions demande en plus Audiveris : l'application propose de le télécharger la première fois.

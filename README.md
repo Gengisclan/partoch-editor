@@ -32,6 +32,8 @@
 - **Installateur** : télécharge et installe Partoch, avec un raccourci sur le Bureau.
 - **Portable** : rien à installer, tout reste à côté du fichier (partitions et réglages), idéal sur une clé USB.
 
+La version installée se met à jour toute seule ; la version portable signale les nouvelles versions.
+
 Windows peut afficher « Windows a protégé votre ordinateur » (application non signée) : *Informations complémentaires* → *Exécuter quand même*.
 
 Mode d'emploi complet : [Readme.txt](Readme.txt)

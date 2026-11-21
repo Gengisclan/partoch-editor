@@ -2826,6 +2826,13 @@
   });
 
   if (api) {
+    api.onUpdate && api.onUpdate((u) => {
+      const b = $('#updBtn');
+      if (u.kind === 'ready') { b.textContent = 'Mise à jour ' + u.version + ' : redémarrer'; b.onclick = () => api.updateRestart(); }
+      else if (u.kind === 'available') { b.textContent = 'Version ' + u.version + ' disponible'; b.onclick = () => api.openReleases(); }
+      else return;
+      b.hidden = false;
+    });
     api.onCommand((cmd) => { if (cmd === 'save-before-quit') cmdSave(false).then((ok) => { if (ok) api.quitNow(); }); });
     api.onOpenPath && api.onOpenPath(async (res) => { if (confirmDiscard()) openBytes(res.path, b64ToBytes(res.base64), res.path); });
   }
