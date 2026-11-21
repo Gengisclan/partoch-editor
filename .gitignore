@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.claude/
+*.lnk
+apercu-interface.png
+# partitions personnelles (seule la partition d'essai est publiée)
+Partitions/*
+!Partitions/Partition test.musicxml

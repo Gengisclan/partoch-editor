@@ -1,0 +1,63 @@
+{
+  "name": "partoch-editor",
+  "productName": "Partoch editor",
+  "version": "1.0.0",
+  "description": "Éditeur de partitions pour flûte à bec et piano",
+  "repository": "github:Gengisclan/partoch-editor",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build:vendor": "node tools/build-vendor.mjs",
+    "build:icon": "electron tools/make-icon.js",
+    "dist:portable": "electron-builder --win portable",
+    "dist": "electron-builder --win portable nsis-web",
+    "release": "electron-builder --win portable nsis-web --publish always"
+  },
+  "dependencies": {
+    "vexflow": "^4.2.5"
+  },
+  "devDependencies": {
+    "@spotify/basic-pitch": "^1.0.1",
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0",
+    "esbuild": "^0.28.2"
+  },
+  "build": {
+    "appId": "fr.partoch.editor",
+    "productName": "Partoch editor",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": [
+      "main.js", "preload.js", "scan.js", "package.json",
+      "src/**/*", "assets/**/*",
+      "!node_modules/**/*",
+      "node_modules/vexflow/build/cjs/vexflow-bravura.js",
+      "node_modules/vexflow/package.json"
+    ],
+    "publish": { "provider": "github", "owner": "Gengisclan", "repo": "partoch-editor", "releaseType": "release" },
+    "win": { "icon": "build/icon.png" },
+    "portable": { "artifactName": "Partoch-editor-portable.exe" },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Partoch editor",
+      "installerLanguages": ["fr_FR"],
+      "language": "1036"
+    },
+    "nsisWeb": {
+      "artifactName": "Installer-Partoch-editor.exe",
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Partoch editor",
+      "installerLanguages": ["fr_FR"],
+      "language": "1036"
+    },
+    "fileAssociations": [
+      { "ext": "partoch", "name": "Partition Partoch", "description": "Partition Partoch", "icon": "build/icon.png" }
+    ]
+  }
+}

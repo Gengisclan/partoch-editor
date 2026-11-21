@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' blob:; style-src 'self' 'unsafe-inline'; media-src 'self' data: blob:; img-src 'self' data:; connect-src 'self' data: blob:">
+  <title>Partoch editor</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header id="topbar">
+    <div class="tb-left">
+      <div class="brand" title="Partoch editor"><span class="mark" data-icon="q"></span>Partoch</div>
+      <div class="dropdown" id="exportDD">
+        <button id="exportBtn" class="tbtn labeled" data-icon="menu" data-tip="Fichier">Fichier</button>
+        <div class="menu" id="exportMenu" hidden>
+          <button class="item" data-cmd="new" data-icon="file">Nouvelle partition<span data-kbd="new"></span></button>
+          <button class="item" data-cmd="open" data-icon="open">Ouvrir…<span data-kbd="open"></span></button>
+          <button class="item" data-cmd="scan" data-icon="scan">Scanner une partition…</button>
+          <div class="sep"></div>
+          <button class="item" data-cmd="save" data-icon="save">Enregistrer<span data-kbd="save"></span></button>
+          <button class="item" data-cmd="saveAs" data-icon="">Enregistrer sous…<span data-kbd="saveAs"></span></button>
+          <div class="sep"></div>
+          <div class="mlabel">Exporter</div>
+          <button class="item" data-cmd="exportPdf" data-icon="exportI">PDF<span data-kbd="exportPdf"></span></button>
+          <button class="item" data-cmd="exportXml" data-icon="">MusicXML</button>
+          <button class="item" data-cmd="exportMidi" data-icon="">MIDI</button>
+          <button class="item" data-cmd="exportParts" data-icon="">Parties séparées (PDF)…</button>
+          <div class="sep"></div>
+          <button class="item" data-cmd="layout" data-icon="">Mise en page…</button>
+          <button class="item" data-cmd="print" data-icon="print">Imprimer…<span data-kbd="print"></span></button>
+        </div>
+      </div>
+      <div class="dropdown pdd" id="editDD">
+        <button class="tbtn labeled" data-pmenu data-tip="Édition">Édition</button>
+        <div class="menu pmenu" hidden>
+          <button class="item" data-cmd="cut">Couper<span data-kbd="cut"></span></button>
+          <button class="item" data-cmd="copy">Copier<span data-kbd="copy"></span></button>
+          <button class="item" data-cmd="paste">Coller<span data-kbd="paste"></span></button>
+          <button class="item" data-cmd="selectAll">Tout sélectionner<span data-kbd="selectAll"></span></button>
+          <div class="sep"></div>
+          <button class="item" data-cmd="durDouble">Doubler les durées<span data-kbd="durDouble"></span></button>
+          <button class="item" data-cmd="durHalve">Diviser les durées par deux<span data-kbd="durHalve"></span></button>
+          <button class="item" data-cmd="repeatSel">Répéter la sélection…<span data-kbd="repeatSel"></span></button>
+          <div class="sep"></div>
+          <button class="item" data-cmd="goTo">Aller à la mesure…<span data-kbd="goTo"></span></button>
+        </div>
+      </div>
+      <button data-cmd="open" class="tbtn" data-icon="open" data-tip="Ouvrir" data-key="open"></button>
+      <button data-cmd="save" class="tbtn" data-icon="save" data-tip="Enregistrer" data-key="save"></button>
+      <span class="vsep"></span>
+      <button data-cmd="undo" class="tbtn" data-icon="undo" data-tip="Annuler" data-key="undo"></button>
+      <button data-cmd="redo" class="tbtn" data-icon="redo" data-tip="Rétablir" data-key="redo"></button>
+    </div>
+
+    <div class="tb-center transport">
+      <button data-cmd="rewind" class="tbtn" data-icon="rewind" data-tip="Début" data-key="rewind"></button>
+      <button data-cmd="play" id="btnPlay" class="tbtn play" data-icon="play" data-tip="Lecture" data-key="play"></button>
+      <span class="vsep"></span>
+      <button data-toggle="loop" class="tbtn" data-icon="loop" data-tip="Boucle" data-key="loop"></button>
+      <button data-toggle="metronome" class="tbtn" data-icon="metronome" data-tip="Métronome" data-key="metronome"></button>
+      <button data-toggle="countIn" class="tbtn" data-icon="countin" data-tip="Décompte" data-key="countIn"></button>
+      <div class="dropdown" id="tracksDD">
+        <button id="tracksBtn" class="tbtn" data-icon="tracks" data-tip="Pistes"></button>
+        <div class="menu" id="tracksMenu" hidden></div>
+      </div>
+      <span class="vsep"></span>
+      <label class="field tempo" title="Tempo"><span class="lbl" data-icon="q">=</span><input id="tempo" type="number" min="20" max="300" step="1"></label>
+      <label class="field speed" title="Vitesse de lecture"><span class="lbl">Vitesse</span><input id="speed" type="range" min="25" max="200" step="5" value="100"><span id="speedVal">100 %</span></label>
+    </div>
+
+    <div class="tb-right">
+      <button data-cmd="record" id="btnRec" class="tbtn labeled rec" data-icon="record" data-tip="Enregistrer au micro" data-key="record">Micro</button>
+      <span class="vsep"></span>
+      <button data-cmd="transpose" class="tbtn labeled" data-icon="transpose" data-tip="Transposer" data-key="transpose">Transposer</button>
+      <button data-cmd="props" class="tbtn labeled" data-icon="settings" data-tip="Titre, instruments, tonalité…">Partition</button>
+      <button data-cmd="prefs" class="tbtn" data-icon="gear" data-tip="Paramètres"></button>
+    </div>
+  </header>
+
+  <nav id="palette">
+    <div class="seg" id="modeSeg">
+      <button data-mode="select" data-icon="select" data-tip="Sélection (Échap)">Sélection</button>
+      <button data-mode="input" data-icon="pencil" data-tip="Écriture" data-key="mode">Écriture</button>
+    </div>
+    <span class="vsep"></span>
+    <div class="group durs" id="durs">
+      <button data-dur="w" data-icon="w" data-tip="Ronde" data-key="dur_w"></button>
+      <button data-dur="h" data-icon="h" data-tip="Blanche" data-key="dur_h"></button>
+      <button data-dur="q" data-icon="q" data-tip="Noire" data-key="dur_q"></button>
+      <button data-dur="8" data-icon="8" data-tip="Croche" data-key="dur_8"></button>
+      <button data-dur="16" data-icon="16" data-tip="Double croche" data-key="dur_16"></button>
+      <button data-dur="32" data-icon="32" data-tip="Triple croche" data-key="dur_32"></button>
+      <button data-cmd="dot" id="btnDot" data-icon="dot" data-tip="Point" data-key="dot"></button>
+      <button data-cmd="rest" id="btnRest" data-icon="rest" data-tip="Silence" data-key="rest"></button>
+    </div>
+    <span class="vsep"></span>
+    <div class="group">
+      <button data-cmd="tuplet" id="btnTuplet" data-icon="tuplet" data-tip="Triolet" data-key="tuplet"></button>
+      <button data-cmd="grace" id="btnGrace" data-icon="grace" data-tip="Petite note" data-key="grace"></button>
+      <button data-cmd="chord" id="btnChord" data-icon="chord" data-tip="Accord (ou Maj+clic)" data-key="chord"></button>
+    </div>
+    <span class="vsep"></span>
+    <div class="seg voices" id="voiceSeg">
+      <button data-voice="1" data-tip="Voix 1" data-key="voice1">1</button>
+      <button data-voice="2" data-tip="Voix 2" data-key="voice2">2</button>
+    </div>
+    <span class="vsep"></span>
+    <div class="group">
+      <button data-acc="1" data-icon="sharp" data-tip="Dièse" data-key="sharp"></button>
+      <button data-acc="-1" data-icon="flat" data-tip="Bémol" data-key="flat"></button>
+      <button data-acc="0" data-icon="natural" data-tip="Bécarre" data-key="natural"></button>
+    </div>
+    <span class="vsep"></span>
+    <div class="group">
+      <button data-cmd="tie" data-icon="tie" data-tip="Liaison de prolongation" data-key="tie"></button>
+      <button data-cmd="slur" id="btnSlur" data-icon="slur" data-tip="Liaison d'expression" data-key="slur"></button>
+      <button data-cmd="phrase" id="btnPhrase" data-icon="phrase" data-tip="Liaison de phrasé" data-key="phrase"></button>
+      <button data-cmd="breath" data-icon="breath" data-tip="Respiration" data-key="breath"></button>
+    </div>
+    <span class="vsep"></span>
+    <div class="group" id="marks">
+      <div class="dropdown pdd">
+        <button class="caret" data-pmenu data-icon="dyn" data-tip="Nuances"></button>
+        <div class="menu pmenu" hidden>
+          <div class="dyngrid"><button data-do="dyn:pp">pp</button><button data-do="dyn:p">p</button><button data-do="dyn:mp">mp</button><button data-do="dyn:mf">mf</button><button data-do="dyn:f">f</button><button data-do="dyn:ff">ff</button><button data-do="dyn:sfz">sfz</button><button data-do="dyn:fp">fp</button></div>
+          <div class="sep"></div>
+          <button class="item" data-do="hairpin:cresc">Crescendo<span data-kbd="cresc"></span></button>
+          <button class="item" data-do="hairpin:dim">Decrescendo<span data-kbd="dim"></span></button>
+        </div>
+      </div>
+      <div class="dropdown pdd">
+        <button class="caret" data-pmenu data-icon="artic" data-tip="Articulations"></button>
+        <div class="menu pmenu" hidden>
+          <button class="item" data-do="art:stacc">Staccato<span data-kbd="staccato"></span></button>
+          <button class="item" data-do="art:staccmo">Staccatissimo</button>
+          <button class="item" data-do="art:ten">Tenuto<span data-kbd="tenuto"></span></button>
+          <button class="item" data-do="art:acc">Accent<span data-kbd="accent"></span></button>
+          <button class="item" data-do="art:marc">Marcato<span data-kbd="marcato"></span></button>
+          <div class="sep"></div>
+          <button class="item" data-do="art:fermata">Point d'orgue<span data-kbd="fermata"></span></button>
+        </div>
+      </div>
+      <div class="dropdown pdd">
+        <button class="caret" data-pmenu data-icon="orn" data-tip="Ornements"></button>
+        <div class="menu pmenu" hidden>
+          <button class="item" data-do="orn:tr">Trille<span data-kbd="trill"></span></button>
+          <button class="item" data-do="orn:mord">Mordant</button>
+          <button class="item" data-do="orn:prall">Mordant supérieur</button>
+          <button class="item" data-do="orn:turn">Gruppetto</button>
+        </div>
+      </div>
+      <div class="dropdown pdd">
+        <button class="caret" data-pmenu data-icon="repeat" data-tip="Reprises et sauts"></button>
+        <div class="menu pmenu" hidden>
+          <button class="item" data-do="mark:rs">Début de reprise</button>
+          <button class="item" data-do="mark:re">Fin de reprise</button>
+          <button class="item" data-do="mark:volta:1">1re fois</button>
+          <button class="item" data-do="mark:volta:2">2e fois</button>
+          <div class="sep"></div>
+          <button class="item" data-do="mark:segno">Segno</button>
+          <button class="item" data-do="mark:coda">Coda</button>
+          <button class="item" data-do="mark:toCoda">À la Coda</button>
+          <button class="item" data-do="mark:fine">Fine</button>
+          <div class="sep"></div>
+          <button class="item" data-do="mark:jump:dc">D.C.</button>
+          <button class="item" data-do="mark:jump:dcFine">D.C. al Fine</button>
+          <button class="item" data-do="mark:jump:dcCoda">D.C. al Coda</button>
+          <button class="item" data-do="mark:jump:ds">D.S.</button>
+          <button class="item" data-do="mark:jump:dsFine">D.S. al Fine</button>
+          <button class="item" data-do="mark:jump:dsCoda">D.S. al Coda</button>
+          <div class="sep"></div>
+          <button class="item" data-do="mark:brk:line">Saut de ligne</button>
+          <button class="item" data-do="mark:brk:page">Saut de page</button>
+        </div>
+      </div>
+      <div class="dropdown pdd">
+        <button class="caret" data-pmenu data-icon="tempo" data-tip="Tempo"></button>
+        <div class="menu pmenu" hidden>
+          <button class="item" data-do="tempo:tempo">Indication de tempo…<span data-kbd="tempoMark"></span></button>
+          <button class="item" data-do="tempo:rit"><i>rit.</i></button>
+          <button class="item" data-do="tempo:accel"><i>accel.</i></button>
+          <button class="item" data-do="tempo:atempo"><i>a tempo</i></button>
+        </div>
+      </div>
+      <div class="dropdown pdd">
+        <button id="btnText" class="caret" data-pmenu data-icon="text" data-tip="Texte"></button>
+        <div class="menu pmenu" hidden>
+          <button class="item" data-cmd="text">Texte libre<span data-kbd="text"></span></button>
+          <button class="item" data-cmd="lyrics">Paroles<span data-kbd="lyrics"></span></button>
+          <button class="item" data-cmd="chordSym">Accords<span data-kbd="chordSym"></span></button>
+          <button class="item" data-cmd="figures">Basse chiffrée<span data-kbd="figures"></span></button>
+        </div>
+      </div>
+    </div>
+    <span class="vsep"></span>
+    <div class="group">
+      <button data-cmd="addMeasure" data-icon="measureAdd" data-tip="Ajouter une mesure" data-key="addMeasure"></button>
+      <button data-cmd="delMeasure" data-icon="measureDel" data-tip="Supprimer la mesure" data-key="delMeasure"></button>
+      <div class="dropdown" id="sigDD">
+        <button id="sigBtn" class="labeled caret" data-tip="Métrique">Métrique</button>
+        <div class="menu" id="sigMenu" hidden>
+          <div id="sigWhere"></div>
+          <div class="siggrid"><button data-sig="2/4" title="2/4"><b>2</b><b>4</b></button><button data-sig="3/4" title="3/4"><b>3</b><b>4</b></button><button data-sig="4/4" title="4/4"><b>4</b><b>4</b></button><button data-sig="5/4" title="5/4"><b>5</b><b>4</b></button><button data-sig="2/2" title="2/2"><b>2</b><b>2</b></button><button data-sig="3/8" title="3/8"><b>3</b><b>8</b></button><button data-sig="6/8" title="6/8"><b>6</b><b>8</b></button><button data-sig="9/8" title="9/8"><b>9</b><b>8</b></button><button data-sig="12/8" title="12/8"><b>12</b><b>8</b></button><button data-sig="7/8" title="7/8"><b>7</b><b>8</b></button></div>
+          <button class="item" data-cmd="timeSig">Autre métrique…</button>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div id="rangeWarn" hidden></div>
+  </nav>
+
+  <main id="scroller">
+    <div id="paper">
+      <div id="titleBlock">
+        <div id="title" contenteditable="true" spellcheck="false"></div>
+        <div id="composer" contenteditable="true" spellcheck="false" data-placeholder="Compositeur"></div>
+      </div>
+      <div id="scoreWrap">
+        <div id="score"></div>
+        <svg id="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+  </main>
+
+  <footer id="status">
+    <span class="spacer"></span>
+    <span id="selInfo"></span>
+    <span id="loadInfo"></span>
+    <div class="dropdown" id="tunerDD">
+      <button id="tunerBtn" data-icon="fork" data-tip="Accordeur"></button>
+      <div class="menu" id="tunerMenu" hidden>
+        <div class="tnote"><span id="tnNote">–</span><span id="tnCents"></span></div>
+        <div class="tbar"><span class="tmid"></span><span id="tnNeedle"></span></div>
+        <select id="tnRef"><option value="440">La 440</option><option value="442">La 442</option><option value="415">La 415</option><option value="392">La 392</option></select>
+      </div>
+    </div>
+    <div class="zoom">
+      <button data-cmd="zoomOut" data-icon="minus" data-tip="Dézoomer" data-key="zoomOut"></button>
+      <span id="zoomVal">100 %</span>
+      <button data-cmd="zoomIn" data-icon="plus" data-tip="Zoomer" data-key="zoomIn"></button>
+    </div>
+  </footer>
+
+  <div id="recBar" hidden>
+    <span id="recText">Décompte…</span>
+    <div class="meter"><div id="recMeter"></div></div>
+    <button id="recStop" data-icon="stop" title="Arrêter (Échap)">Arrêter</button>
+  </div>
+  <div id="modalBack" hidden>
+    <div id="modal" role="dialog" aria-modal="true"></div>
+  </div>
+  <div id="toast" hidden></div>
+  <div id="printArea"></div>
+
+  <script src="../node_modules/vexflow/build/cjs/vexflow-bravura.js"></script>
+  <script src="../assets/sounds/musyngkite-recorder.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/keys.js"></script>
+  <script src="js/model.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/mic.js"></script>
+  <script src="js/audioimport.js"></script>
+  <script src="js/io.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
