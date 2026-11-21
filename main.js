@@ -269,6 +269,37 @@ ipcMain.handle('omr-run', async (e, files) => {
 });
 ipcMain.handle('omr-cancel', async () => scan.cancelOmr());
 ipcMain.handle('open-audiveris-site', async () => shell.openExternal('https://github.com/Audiveris/audiveris/releases/latest'));
+// installe Audiveris : dernière version Windows (.msi) depuis GitHub, puis l'installateur Windows
+ipcMain.handle('install-audiveris', async (e) => {
+  const { net } = require('electron');
+  const progress = (p) => { if (!e.sender.isDestroyed()) e.sender.send('audiveris-progress', p); };
+  try {
+    const rel = await (await net.fetch('https://api.github.com/repos/Audiveris/audiveris/releases/latest', { headers: { 'User-Agent': 'Partoch-editor', Accept: 'application/vnd.github+json' } })).json();
+    const asset = (rel.assets || []).find((a) => /-windows-x86_64\.msi$/i.test(a.name) && /^https:\/\/github\.com\/Audiveris\//.test(a.browser_download_url));
+    if (!asset) return { error: 'introuvable' };
+    const r = await net.fetch(asset.browser_download_url);
+    if (!r.ok || !r.body) return { error: 'HTTP ' + r.status };
+    const total = Number(r.headers.get('content-length')) || asset.size || 0;
+    const dir = path.join(require('os').tmpdir(), 'partoch');
+    fs.mkdirSync(dir, { recursive: true });
+    const file = path.join(dir, asset.name);
+    const out = fs.createWriteStream(file);
+    let got = 0, last = 0;
+    for await (const chunk of r.body) {
+      got += chunk.length;
+      if (!out.write(chunk)) await new Promise((res) => out.once('drain', res));
+      if (total && got - last > total / 100) { last = got; progress({ step: 'download', frac: got / total }); }
+    }
+    await new Promise((res, rej) => out.end((err) => (err ? rej(err) : res())));
+    progress({ step: 'install' });
+    const code = await new Promise((res) => {
+      const p = require('child_process').spawn(path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'msiexec.exe'), ['/i', file, '/passive'], { windowsHide: false });
+      p.on('exit', res); p.on('error', () => res(-1));
+    });
+    try { fs.rmSync(file, { force: true }); } catch (err) { /* ignore */ }
+    return scan.audiverisPath() ? { ok: true } : { error: 'code ' + code };
+  } catch (err) { return { error: err.message }; }
+});
 // fichiers temporaires (pages scannées, résultats) : effacés en quittant
 app.on('will-quit', () => { try { fs.rmSync(path.join(require('os').tmpdir(), 'partoch'), { recursive: true, force: true }); } catch (e) { /* ignore */ } });
 

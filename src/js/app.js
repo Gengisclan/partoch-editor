@@ -1827,9 +1827,32 @@
   function scanPrefs() { try { return JSON.parse(localStorage.getItem('partoch.scan')) || {}; } catch (e) { return {}; } }
   function saveScanPrefs(o) { try { localStorage.setItem('partoch.scan', JSON.stringify(o)); } catch (e) { /* ignore */ } }
   function audiverisMissing() {
+    let busy = false;
     const md = openModal(`<h2>Reconnaissance de partitions</h2><div class="body">
-      <div>La lecture des partitions scannées nécessite <b>Audiveris</b> (gratuit), qui n’est pas installé.</div>
-      </div><div class="foot"><button data-cancel>Fermer</button><button class="primary" data-ok>Ouvrir la page de téléchargement</button></div>`, () => { api.openAudiverisSite(); });
+      <div>La lecture des partitions scannées nécessite <b>Audiveris</b> (gratuit, 85 Mo), qui n’est pas installé.</div>
+      <div class="meter wide" id="audMeter" hidden><div id="audBar"></div></div>
+      <div id="audState" class="muted"></div>
+      </div><div class="foot"><button data-cancel>Fermer</button><button class="primary" data-ok>Installer</button></div>`, () => {
+      if (busy) return false;
+      if (!api.installAudiveris) { api.openAudiverisSite(); return; }
+      busy = true;
+      const ok = md.querySelector('[data-ok]'), st = md.querySelector('#audState'), bar = md.querySelector('#audBar');
+      ok.disabled = true;
+      md.querySelector('#audMeter').hidden = false;
+      st.textContent = 'Téléchargement…';
+      const off = api.onAudiverisProgress((p) => {
+        if (p.step === 'download') { bar.style.width = Math.round(p.frac * 100) + '%'; st.textContent = 'Téléchargement… ' + Math.round(p.frac * 100) + ' %'; }
+        else { bar.style.width = '100%'; st.textContent = 'Installation…'; }
+      });
+      api.installAudiveris().then((r) => {
+        off(); busy = false;
+        if (r && r.ok) { const c = md.querySelector('[data-cancel]'); if (c) c.click(); toast('Audiveris installé'); return; }
+        st.textContent = 'Échec (' + ((r && r.error) || '?') + ')';
+        ok.disabled = false; ok.textContent = 'Page de téléchargement';
+        ok.onclick = () => api.openAudiverisSite();
+      });
+      return false;
+    });
     return md;
   }
 

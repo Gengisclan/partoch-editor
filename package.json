@@ -1,7 +1,7 @@
 {
   "name": "partoch-editor",
   "productName": "Partoch editor",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Éditeur de partitions pour flûte à bec et piano",
   "repository": "github:Gengisclan/partoch-editor",
   "main": "main.js",
@@ -68,6 +68,7 @@
     },
     "nsisWeb": {
       "artifactName": "Installer-Partoch-editor.exe",
+      "include": "build/installer.nsh",
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,

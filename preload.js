@@ -24,6 +24,8 @@ contextBridge.exposeInMainWorld('api', {
   omrCancel: () => ipcRenderer.invoke('omr-cancel'),
   onOmrProgress: (cb) => { const f = (e, p) => cb(p); ipcRenderer.on('omr-progress', f); return () => ipcRenderer.removeListener('omr-progress', f); },
   openAudiverisSite: () => ipcRenderer.invoke('open-audiveris-site'),
+  installAudiveris: () => ipcRenderer.invoke('install-audiveris'),
+  onAudiverisProgress: (cb) => { const f = (e, p) => cb(p); ipcRenderer.on('audiveris-progress', f); return () => ipcRenderer.removeListener('audiveris-progress', f); },
   // mises à jour
   onUpdate: (cb) => ipcRenderer.on('update-status', (e, u) => cb(u)),
   updateRestart: () => ipcRenderer.send('update-restart'),

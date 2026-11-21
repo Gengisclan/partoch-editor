@@ -17,7 +17,7 @@ Mises à jour : la version installée se met à jour toute seule (« Mise à jou
 
 Au premier lancement, Windows peut afficher « Windows a protégé votre ordinateur » (l'application n'est pas signée) : Informations complémentaires → Exécuter quand même.
 
-Le scan de partitions demande en plus Audiveris : l'application propose de le télécharger la première fois.
+Le scan de partitions demande en plus Audiveris (gratuit, 85 Mo) : l'installateur propose de l'installer (case cochée par défaut, page absente s'il est déjà là). Sinon, Partoch propose de l'installer la première fois qu'on scanne ou qu'on ouvre une partition PDF / image.
 
 Depuis les sources : npm install puis npm start. npm run dist fabrique les deux fichiers dans dist\.
 
